@@ -1,30 +1,35 @@
-import React, { useEffect } from 'react'
-import Navbar from '../components/NavBar'
-import {useState} from "react"
-import RateLimited from '../components/RateLimited'
-import NotesNotFound from '../components/NotesNotFound'
-import NoteCard from '../components/NoteCard'
-import api from '../lib/axios'
-import toast from 'react-hot-toast'
+import { useState } from "react";
+import Navbar from "../components/Navbar";
+import RateLimitedUI from "../components/RateLimited";
+import { useEffect } from "react";
+import api from "../lib/axios";
+import toast from "react-hot-toast";
+import NoteCard from "../components/NoteCard";
+import NotesNotFound from "../components/NotesNotFound";
 
 const HomePage = () => {
-  const [rateLimited , setRateLimited] = useState(false);
-  const [notes,setNotes] = useState([])
+  const [isRateLimited, setIsRateLimited] = useState(false);
+  const [notes, setNotes] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const  [loading, setLoading] = useState(true)
-  
-   useEffect(() => {
+  useEffect(() => {
     const fetchNotes = async () => {
       try {
-        const res = await api.get("/");
+        const res = await api.get("/notes");
         console.log(res.data);
-        setNotes(res.data);
-        setRateLimited(false);
+        const payload = res?.data;
+        const normalized = Array.isArray(payload)
+          ? payload
+          : Array.isArray(payload?.notes)
+          ? payload.notes
+          : [];
+        setNotes(normalized);
+        setIsRateLimited(false);
       } catch (error) {
         console.log("Error fetching notes");
         console.log(error.response);
         if (error.response?.status === 429) {
-          setRateLimited(true);
+          setIsRateLimited(true);
         } else {
           toast.error("Failed to load notes");
         }
@@ -36,35 +41,25 @@ const HomePage = () => {
     fetchNotes();
   }, []);
 
-  if (rateLimited) {
-    return (
-      <div className='min-h-screen'>
-        <Navbar/>
-        <RateLimited/>
-      </div>
-    )
-  }
-
   return (
-    <div className='min-h-screen'>
-        <Navbar/>
-        <div className='max-w-7xl mx-auto p4 mt-6'>
-          {loading && <div className='text-center text-primary py-10'>Loading Notes...</div> }
+    <div className="min-h-screen">
+      <Navbar />
 
-          {!loading && notes.length===0 && (
-           <NotesNotFound/>
-          )}
-
-          {notes.length>0 && !rateLimited &&(
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'>
-              {notes.map(note=>(
-                <NoteCard key = {note._id} note = {note} setNotes={setNotes} />
+      {isRateLimited && <RateLimitedUI />}
+      {!isRateLimited && (
+        <div className="container mx-auto px-6 py-8">
+          {Array.isArray(notes) && notes.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {notes.map((note) => (
+                <NoteCard key={note._id || note.id} note={note} setNotes={setNotes} />
               ))}
             </div>
+          ) : (
+            <NotesNotFound />
           )}
         </div>
+      )}
     </div>
-  )
-}
-
-export default HomePage
+  );
+};
+export default HomePage;

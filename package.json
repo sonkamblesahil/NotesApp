@@ -1,26 +1,16 @@
 {
-  "name": "blogger",
+  "name": "mern-thinkboard",
   "version": "1.0.0",
-  "description": "A full-stack blog application",
-  "private": true,
+  "main": "index.js",
   "scripts": {
-    "start": "npm run start --prefix backend",
-    "server": "npm run dev --prefix backend",
-    "client": "npm run dev --prefix frontend",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
     "build": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend",
-    "heroku-postbuild": "npm run build"
+    "start": "npm run start --prefix backend"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sonkamblesahil/blogger.git"
-  },
-  "keywords": ["blog", "react", "node", "express", "mongodb"],
+  "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/sonkamblesahil/blogger/issues"
-  },
-  "homepage": "https://github.com/sonkamblesahil/blogger#readme"
+  "description": "",
+  "dependencies": {
+    "@upstash/redis": "^1.35.3"
+  }
 }
