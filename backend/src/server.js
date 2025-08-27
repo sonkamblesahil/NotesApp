@@ -37,11 +37,12 @@ app.use("/api/notes", notesRoutes);
 
 if (process.env.NODE_ENV === "production") {
   // Serve static files from the React frontend app
-  app.use(express.static(path.join(__dirname, "../../frontend/dist")));
+  const frontendPath = path.join(process.cwd(), 'frontend', 'dist');
+  app.use(express.static(frontendPath));
 
   // Handle React routing, return all requests to React app
-  app.get('*', function(req, res) {
-    res.sendFile(path.join(__dirname, '../../frontend/dist/index.html'));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(frontendPath, 'index.html'));
   });
 }
 
