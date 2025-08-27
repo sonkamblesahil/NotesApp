@@ -3,13 +3,12 @@ import React from 'react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
-import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import api from '../lib/axios'
 
 const CreatePage = () => {
  const [title, setTitle] = useState("")
 const [content, setContent] = useState("")
-const [loading, setLoading] = useState(false)
 const navigate = useNavigate();
 
   async function handleSubmit(e) {
@@ -21,7 +20,7 @@ const navigate = useNavigate();
 
     setLoading(true)
     try {
-      await axios.post("http://localhost:5001", { title, content })
+      await api.post("/", { title, content })
       toast.success("Note created successfully")
       navigate("/")
     } catch (error) {
