@@ -20,6 +20,9 @@ if (process.env.NODE_ENV !== "production") {
       origin: "http://localhost:5173",
     })
   );
+} else {
+  // Enable CORS for production
+  app.use(cors());
 }
 app.use(express.json()); // this middleware will parse JSON bodies: req.body
 app.use(rateLimiter);
@@ -33,10 +36,12 @@ app.use(rateLimiter);
 app.use("/api/notes", notesRoutes);
 
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+  // Serve static files from the React frontend app
+  app.use(express.static(path.join(__dirname, "../../frontend/dist")));
 
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
+  // Handle React routing, return all requests to React app
+  app.get('*', function(req, res) {
+    res.sendFile(path.join(__dirname, '../../frontend/dist/index.html'));
   });
 }
 
